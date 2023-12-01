@@ -1,0 +1,23 @@
+{
+  "name": "bankai",
+  "version": "0.0.1",
+  "description": "Bankai is a CLI tool that helps you to automate your development workflow.",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "postinstall": "go-npm install",
+    "preuninstall": "go-npm uninstall"
+  },
+  "author": "Enea Xharau",
+  "license": "MIT",
+  "dependencies": {
+    "go-npm": "^0.1.9"
+  },
+  "goBinary": {
+      "name": "bankai",
+      "path": "./bin",
+      "url": "https://github.com/giteneaxharau/bankai/releases/download/v{{version}}/bankai_{{version}}_{{platform}}_{{arch}}.tar.gz"
+  }
+}

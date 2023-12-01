@@ -4,12 +4,14 @@ Copyright © 2023 NAME HERE <EMAIL ADDRESS>
 package create
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"os/exec"
 	"strings"
 
-	"github.com/manifoldco/promptui"
+	"github.com/giteneaxharau/bankai/lib"
+	"github.com/giteneaxharau/bankai/lib/config"
 	"github.com/spf13/cobra"
 )
 
@@ -29,64 +31,47 @@ var CreateCmd = &cobra.Command{
 	Example: `bankai init`,
 }
 
-type promptContect struct {
-	errorMsg string
-	label    string
-}
-
-var packageManagers []string = []string{"npm", "yarn", "pnpm", "bun"}
-
-func promptGetSelect(pc promptContect) string {
-
-	prompt := promptui.Select{
-		Label: pc.label,
-		Items: packageManagers,
-	}
-	_, res, err := prompt.Run()
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
-		os.Exit(1)
-	}
-	fmt.Printf("You choose %s\n", res)
-	return res
-}
-
 func initializeProject(pkgmFlag string) {
 	_, errNextProjectExists := os.Stat("next.config.*")
-	pkgmCreateCmd := map[string]string{
-		"npm":  "npx create-next-app@latest",
-		"yarn": "yarn create next-app",
-		"pnpm": "pnpm create next-app",
-		"bun":  "bunx create-next-app",
-	}
 	if os.IsNotExist(errNextProjectExists) {
 		fmt.Println("Next project not found. Creating new project...")
 		pkgm := pkgmFlag
 		if len(pkgmFlag) < 1 {
-			pkgm = promptGetSelect(promptContect{
-				errorMsg: "Please select a package manager",
-				label:    "Select a package manager",
-			})
+			pkgm = lib.PromptGetSelect(lib.PromptContect{
+				ErrorMsg: "Please select a package manager",
+				Label:    "Select a package manager",
+			}, lib.PackageManagers)
 		}
 		// Create new project
-		cmdCreate := strings.Split(pkgmCreateCmd[pkgm], " ")
+		cmdCreate := strings.Split(lib.PackageManagersMap[pkgm], " ")
 		cmd := exec.Command(cmdCreate[0], cmdCreate[1:]...)
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 		cmd.Stdin = os.Stdin
-		cmd.Run()
+		if err := cmd.Run(); err != nil {
+			var execErr *exec.ExitError
+			if errors.As(err, &execErr) {
+				fmt.Println("Error creating new project. Please try again.")
+				os.Exit(1)
+			}
+		}
+		isSrcDir := lib.CheckNextjsProjectDir()
+		packageManager := pkgm
+		alias := lib.PromptGetInput(lib.PromptContect{
+			Label:   "Enter an alias for this project",
+			ErrorMsg: "Please enter an alias for this project",
+		})
+		config.CreateConfig(config.Config{
+			Alias:          alias,
+			PackageManager: packageManager,
+			HasSrcDir:       isSrcDir,
+		})
+	} else {
+		fmt.Println("Next project found. Skipping...")
 	}
 }
 
 func init() {
-	CreateCmd.PersistentFlags().StringP("package-manager", "p", "npm", "Package manager to use")
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// createCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// createCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	CreateCmd.Flags().StringP("package-manager", "p", "", "Package manager to use")
+	CreateCmd.Aliases = []string{"create"}
 }

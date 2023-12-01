@@ -6,6 +6,7 @@ package cmd
 import (
 	"os"
 
+	"github.com/giteneaxharau/bankai/cmd/add"
 	"github.com/giteneaxharau/bankai/cmd/create"
 	"github.com/spf13/cobra"
 )
@@ -15,9 +16,6 @@ var rootCmd = &cobra.Command{
 	Use:   "bankai",
 	Short: "Elevate your development workflow with Bankai",
 	Long:  `Bankai is a CLI tool that helps you to automate your development workflow.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -31,6 +29,7 @@ func Execute() {
 
 func addCommands() {
 	rootCmd.AddCommand(create.CreateCmd)
+	rootCmd.AddCommand(add.AddCmd)
 }
 
 func init() {
@@ -42,7 +41,6 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	addCommands()
 
 }
