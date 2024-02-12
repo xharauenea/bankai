@@ -22,6 +22,11 @@
     "turbo": "^1.12.3",
     "typescript": "^5.3.3"
   },
+  "eslintConfig": {
+    "extends": [
+      "@bankai/eslint-config/base"
+    ]
+  },
   "packageManager": "pnpm@8.9.0",
   "engines": {
     "node": ">=18"
