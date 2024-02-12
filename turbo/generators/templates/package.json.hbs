@@ -1,0 +1,29 @@
+{
+  "name": "@bankai/{{ name }}",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo node_modules",
+    "format": "prettier --check . --ignore-path ../../.gitignore",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@bankai/eslint-config": "workspace:^0.2.0",
+    "@bankai/prettier-config": "workspace:^0.1.0",
+    "@bankai/tsconfig": "workspace:^0.1.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.5",
+    "typescript": "^5.3.3"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@bankai/eslint-config/base"
+    ]
+  },
+  "prettier": "@bankai/prettier-config"
+}
